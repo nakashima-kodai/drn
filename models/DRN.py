@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from .base_model import BaseModel
 from .blocks import *
 from . import networks
@@ -18,7 +19,6 @@ class DRN(BaseModel):
         self.model_names = ['drn', 'clf']
         self.drn = networks.DRNC26(opt.input_nc, 'batch', 'relu', 'zero')
         self.clf = nn.Conv2d(self.drn.output_nc, opt.n_class, kernel_size=1, bias=True)
-        self.up = nn.functional.interpolate(scale_factor=8, mode='bilinear')
         self.softmax = nn.LogSoftmax()
 
         if self.opt.phase == 'train':
@@ -35,7 +35,7 @@ class DRN(BaseModel):
     def forward(self):
         hidden = self.drn(self.image)
         hidden = self.clf(hidden)
-        hidden = self.up(hidden)
+        hidden = F.interpolate(hidden, scale_factor=8, mode='bilinear')
         self.prob = self.softmax(hidden)
 
     def optimize_parameters(self):

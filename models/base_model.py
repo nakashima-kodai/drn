@@ -155,8 +155,5 @@ class BaseModel():
                     param.requires_grad = requires_grad
 
     def trainid2color(self, label):
-        # color = torch.from_numpy(CITYSCAPE_PALETTE[label].transpose((2, 0, 1)))
-        print('label size: {}'.format(label.size()))
-        color = CITYSCAPE_PALETTE[label]
-        print('color size: {}'.format(color.size()))
+        color = torch.from_numpy(CITYSCAPE_PALETTE[label].transpose((2, 0, 1)))
         return color

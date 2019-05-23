@@ -11,6 +11,12 @@ def create_dataset(opt):
     if opt.dataset_name == 'cityscapes':
         from .cityscapes_dataset import CityscapesDataset
         dataset = CityscapesDataset()
+    elif opt.dataset_name == 'bdd100k':
+        from .bdd100k_dataset import BDD100KDataset
+        dataset = BDD100KDataset()
+    elif opt.dataset_name == 'gta5':
+        from .gta5_dataset import GTA5Dataset
+        dataset = GTA5Dataset()
     else:
         raise ValueError("Dataset [%s] not recognized." % (opt.dataset_name))
 

@@ -1,9 +1,12 @@
 import os
-from torch.utils.tensorboard import SummaryWriter
 from options.train_options import TrainOptions
 from data.create_data_loader import create_data_loader
 from models import create_model
 from utils import visualizer, utils
+try:
+    from torch.utils.tensorboard import SummaryWriter
+except:
+    from tensorboardX import SummaryWriter
 
 
 opt = TrainOptions().parse()
@@ -16,6 +19,11 @@ print('### prepare DataLoader')
 data_loader = create_data_loader(opt)
 train_loader = data_loader.load_data()
 print('training images = {}'.format(len(data_loader)))
+
+# for iter, data in enumerate(train_loader):
+#     # label = data['label'].repeat(1, 3, 1, 1)
+#     # visualizer.show_loaded_image(data['color'], label, nrow=opt.batch_size)
+#     visualizer.show_label(data['label'], nrow=opt.batch_size)
 
 # set model
 model = create_model(opt)
