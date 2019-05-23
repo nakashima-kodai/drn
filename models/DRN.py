@@ -12,17 +12,17 @@ class DRN(BaseModel):
     def initialize(self, opt):
         BaseModel.initialize(self, opt)
 
-        self.loss_names = ['all']
+        self.loss_names = ['drn']
 
         # set model
         self.model_names = ['drn', 'clf']
         self.drn = networks.DRNC26(opt.input_nc, 'batch', 'relu', 'zero')
         self.clf = nn.Conv2d(self.drn.output_nc, opt.n_class, kernel_size=1, bias=True)
-        self.up = nn.Upsample(scale_factor=8, mode='bilinear')
+        self.up = nn.functional.interpolate(scale_factor=8, mode='bilinear')
         self.softmax = nn.LogSoftmax()
 
         if self.opt.phase == 'train':
-            params = list(self.drn.parameters()) + list(self.clf.parameters()) + list(self.up.parameters()) + list(self.softmax.parameters())
+            params = list(self.drn.parameters()) + list(self.clf.parameters())
             self.optimizer = torch.optim.SGD(params, lr=opt.lr, momentum=opt.momentum, weight_decay=opt.weight_decay)
             self.optimizers.append(self.optimizer)
 
@@ -42,9 +42,9 @@ class DRN(BaseModel):
         self.optimizer.zero_grad()
 
         self.forward()
-        self.loss_all = self.criterion(self.prob, self.label.long().squeeze(dim=1))
+        self.loss_drn = self.criterion(self.prob, self.label.long().squeeze(dim=1))
 
-        self.loss_all.backward()
+        self.loss_drn.backward()
         self.optimizer.step()
 
     def sample(self):
