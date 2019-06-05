@@ -31,6 +31,7 @@ class DRN(BaseModel):
     def set_variables(self, data):
         self.image = data['image'].cuda()
         self.label = data['label'].cuda()
+        self.color = data['color']  # Not used in training
 
     def forward(self):
         hidden = self.drn(self.image)
@@ -56,5 +57,5 @@ class DRN(BaseModel):
         colors_pred = torch.cat(colors_pred, dim=0)
 
         image = (self.image.cpu() + 1.0) / 2.0
-        saved_image = torch.cat((image, colors_pred), dim=0)
+        saved_image = torch.cat((image, colors_pred, self.color), dim=0)
         return saved_image
